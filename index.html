@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PreviewDiff: Multimodal Critic-Guided Search over Diffusion Latents</title>
+  <meta name="description" content="Project page for PreviewDiff, a training-free test-time search method that uses multimodal feedback inside diffusion denoising.">
+  <meta property="og:title" content="PreviewDiff">
+  <meta property="og:description" content="Multimodal critic-guided search over diffusion latents for prompt-faithful image and video generation.">
+  <meta property="og:image" content="img/figures/previewdiff_overview.webp">
+  <link rel="stylesheet" href="bootstrap-grid.css">
+  <link rel="stylesheet" href="css/styles.css">
+  <script defer src="js/tree-data.js"></script>
+  <script defer src="js/example-data.js"></script>
+  <script defer src="js/main.js"></script>
+</head>
+
+<body>
+<div class="container">
+  <header class="paper-title">
+    <h1>PreviewDiff: Multimodal Critic-Guided Search over Diffusion Latents</h1>
+
+    <div class="author-row-new" aria-label="Authors">
+      <span><a href="https://vsubramaniam851.github.io/">Vighnesh Subramaniam<sup>1*</sup></a></span>,
+      <span><a href="https://people.csail.mit.edu/boris/boris.html">Boris Katz<sup>1</sup></a></span>,
+      <span><a href="https://briancheung.github.io/">Brian Cheung<sup>1,3</sup></a></span>,
+      <span><a href="https://chunliangli.github.io/">Chun-Liang Li<sup>2</sup></a></span>,
+      <span><a href="https://tomas.pfister.fi/">Tomas Pfister<sup>2</sup></a></span>,
+      <span><a href="https://people.csail.mit.edu/yalesong/home/">Yale Song<sup>2</sup></a></span>
+    </div>
+
+    <div class="affiliations">
+      <span><sup>1</sup> MIT CSAIL</span>
+      <span><sup>2</sup> Google Cloud AI Research</span>
+      <span><sup>3</sup> UCSF</span><br>
+      <span>*Correspondence: vsub851@mit.edu</span>
+    </div>
+
+    <div class="paper-btn-parent" aria-label="Project links">
+      <span class="paper-btn disabled" title="Add the public paper URL when available">Paper</span>
+      <span class="paper-btn disabled" title="Add the public code URL when available">Code</span>
+      <!-- <a class="paper-btn" href="#tree-demo">Interactive Tree</a>
+      <a class="paper-btn" href="#examples">Examples</a> -->
+    </div>
+
+    <!-- <p class="tagline">
+      PreviewDiff uses multimodal feedback while a diffusion sample is still editable: decode intermediate previews, critique them, branch over semantic fixes and local latent restarts, then prune and roll forward the best continuations.
+    </p> -->
+  </header>
+
+  <section id="teaser-image">
+    <h2>Closed-loop generation inside the denoising process.</h2>
+    <figure>
+      <img src="img/figures/previewdiff_overview.webp" alt="Overview of the PreviewDiff method." class="wide-img">
+      <figcaption>
+        PreviewDiff turns one open-loop denoising trajectory into a critic-guided tree over intermediate latent continuations.
+      </figcaption>
+    </figure>
+
+    <div class="takeaway-grid" aria-label="PreviewDiff summary cards">
+      <div class="card"><span class="kicker">Preview</span><br><strong>Decode partial clean-latent estimates</strong> at selected checkpoints, without waiting for a full generation.</div>
+      <div class="card"><span class="kicker">Critique</span><br><strong>Ask a multimodal judge</strong> to score prompt satisfaction and propose compact correction notes.</div>
+      <div class="card"><span class="kicker">Branch</span><br><strong>Re-noise locally and continue</strong> under corrected conditioning, keeping the search near promising partial scenes.</div>
+    </div>
+  </section>
+
+  <section id="abstract">
+    <hr>
+    <h2>Abstract</h2>
+    <p>
+      Diffusion models produce striking images and videos, but they still struggle with compositional details such as object counts, attribute binding, spatial relations, and temporally grounded actions. Best-of-N sampling can spend more compute at test time, but it is open-loop: it only chooses among completed outputs and cannot repair a promising trajectory before it fails.
+    </p>
+    <p>
+      PreviewDiff is a training-free test-time search method that converts diffusion sampling into multimodal, critic-guided search over intermediate latents. At selected denoising checkpoints, it decodes a partial preview, asks a multimodal judge to score and critique it, and uses the resulting natural-language feedback to branch over semantic prompt edits and locally re-noised latent continuations. Across image and video benchmarks, PreviewDiff improves over budget-matched Best-of-N and scalar-search baselines.
+    </p>
+  </section>
+
+  <section id="method">
+    <hr>
+    <h2>What changes relative to Best-of-N?</h2>
+    <div class="method-grid">
+      <div class="method-card">
+        <h3>Best-of-N selection</h3>
+        <p>Samples many complete outputs, scores each final image or video, and returns the best one. This is simple and strong, but the verifier only acts after mistakes have already been baked into the final sample.</p>
+      </div>
+      <div class="method-card emphasis">
+        <h3>PreviewDiff search</h3>
+        <p>Uses the same kind of multimodal signal earlier. It previews partial denoising states, asks for a critique, branches over targeted semantic fixes plus local latent restarts, and prunes before spending full rollout compute.</p>
+      </div>
+    </div>
+
+    <ol class="inline-steps">
+      <li><strong>State:</strong> an intermediate clean-latent estimate, checkpoint time, positive/negative conditioning, and feedback history.</li>
+      <li><strong>Action:</strong> a compact positive fix note, optional avoid note, restart depth, and branch seed.</li>
+      <li><strong>Reward:</strong> a multimodal prompt-satisfaction score for the decoded preview.</li>
+      <li><strong>Tree policy:</strong> beam-pruned expansion with max backup over descendant values.</li>
+    </ol>
+
+    <!-- <figure>
+      <img src="img/figures/new_concept_figure.webp" alt="Conceptual diagram of PreviewDiff search states, critic feedback, and latent continuation." class="wide-img">
+      <figcaption>
+        The multimodal model is used both as a value estimator and as a policy-like source of semantic correction actions.
+      </figcaption>
+    </figure> -->
+  </section>
+
+  <section id="results">
+    <hr>
+    <h2>Results at a glance</h2>
+    <p>
+      The paper reports gains across image generation with SDXL, SD-3.5, and FLUX.2, and video generation with LTX-Video and Wan. The headline pattern is consistent: spending critic compute inside denoising beats spending it only on final-sample selection.
+    </p>
+
+    <div class="metric-grid" aria-label="Highlighted results">
+      <div class="metric-card">
+        <span class="metric-number">+0.202</span>
+        <span class="metric-label">SDXL · GenEval2 Gemini P@4</span>
+        <span class="metric-note">PreviewDiff 2.292 vs Best-of-N 2.090.</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-number">+0.511</span>
+        <span class="metric-label">SDXL · T2I-CompBench++ Gemini P@4</span>
+        <span class="metric-note">PreviewDiff 3.474 vs Best-of-N 2.963.</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-number">+0.623</span>
+        <span class="metric-label">LTX-Video · NarrLV Gemini P@4</span>
+        <span class="metric-note">PreviewDiff 2.167 vs Best-of-N 1.544.</span>
+      </div>
+    </div>
+
+    <figure>
+      <img src="img/figures/fig2_scaling.webp" alt="Scaling curves comparing PreviewDiff and Best-of-N for image and video generation." class="wide-img">
+      <figcaption>
+        PreviewDiff improves as denoiser-step budget increases and stays above budget-matched Best-of-N for both image and video generation.
+      </figcaption>
+    </figure>
+
+    <details>
+      <summary>Show fixed-budget result tables from the paper</summary>
+      <h3>Image generation</h3>
+      <div class="table-wrap" tabindex="0">
+        <table>
+          <thead>
+            <tr><th>Model</th><th>Method</th><th>GenEval2 Gemini P@4</th><th>GenEval2 Qwen-3 Val</th><th>T2I-CoRe Gemini P@4</th><th>T2I-Comp++ Gemini P@4</th><th>BLIP VQA</th></tr>
+          </thead>
+          <tbody>
+            <tr class="highlight"><td>SDXL</td><td>PreviewDiff</td><td>2.292</td><td>1.9765</td><td>2.015</td><td>3.474</td><td>0.4844</td></tr>
+            <tr><td>SDXL</td><td>Best-of-N</td><td>2.090</td><td>1.5523</td><td>1.713</td><td>2.963</td><td>0.3976</td></tr>
+            <tr><td>SDXL</td><td>EvoSearch</td><td>2.103</td><td>—</td><td>1.7543</td><td>3.013</td><td>0.4521</td></tr>
+            <tr><td>SDXL</td><td>Particle-Sample</td><td>1.902</td><td>—</td><td>1.9154</td><td>3.003</td><td>0.4255</td></tr>
+            <tr class="highlight"><td>SD-3.5</td><td>PreviewDiff</td><td>1.965</td><td>1.588</td><td>1.765</td><td>2.011</td><td>0.2566</td></tr>
+            <tr><td>SD-3.5</td><td>Best-of-N</td><td>1.754</td><td>1.3854</td><td>1.545</td><td>1.913</td><td>0.2011</td></tr>
+            <tr class="highlight"><td>FLUX.2 9B</td><td>PreviewDiff</td><td>3.112</td><td>2.675</td><td>2.781</td><td>3.758</td><td>0.7851</td></tr>
+            <tr><td>FLUX.2 9B</td><td>Best-of-N</td><td>2.775</td><td>2.504</td><td>2.674</td><td>3.510</td><td>0.7256</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Video generation</h3>
+      <div class="table-wrap" tabindex="0">
+        <table>
+          <thead>
+            <tr><th>Model</th><th>Method</th><th>T2V-Comp Gemini P@4</th><th>T2V-Comp Qwen3-VL P@4</th><th>LLaVA Eval</th><th>NarrLV Gemini P@4</th><th>NarrLV Qwen-2.5 Eval</th><th>V-Bench 2.0 Gemini P@4</th></tr>
+          </thead>
+          <tbody>
+            <tr class="highlight"><td>LTX-Video 9B</td><td>PreviewDiff</td><td>3.021</td><td>1.987</td><td>0.4523</td><td>2.167</td><td>62.17</td><td>3.162</td></tr>
+            <tr><td>LTX-Video 9B</td><td>Best-of-N</td><td>2.716</td><td>1.411</td><td>0.3922</td><td>1.544</td><td>55.92</td><td>3.123</td></tr>
+            <tr><td>LTX-Video 9B</td><td>EvoSearch</td><td>2.814</td><td>1.901</td><td>0.3713</td><td>2.012</td><td>61.14</td><td>3.071</td></tr>
+            <tr><td>LTX-Video 9B</td><td>Video-T1</td><td>2.861</td><td>1.954</td><td>0.4329</td><td>2.115</td><td>61.87</td><td>3.124</td></tr>
+            <tr class="highlight"><td>Wan 2.2 A14B</td><td>PreviewDiff</td><td>3.541</td><td>2.019</td><td>0.6311</td><td>3.411</td><td>71.22</td><td>3.554</td></tr>
+            <tr><td>Wan 2.2 A14B</td><td>Best-of-N</td><td>3.362</td><td>1.875</td><td>0.6011</td><td>2.874</td><td>68.16</td><td>3.292</td></tr>
+            <tr><td>Wan 2.2 A14B</td><td>Video-T1</td><td>3.465</td><td>1.901</td><td>0.6266</td><td>3.229</td><td>—</td><td>3.509</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+  </section>
+
+  <section id="tree-demo">
+    <hr>
+    <h2>Interactive PreviewDiff search tree</h2>
+    <p id="tree-prompt"><strong>Prompt:</strong></p>
+    <p id="tree-note" class="caption-text"></p>
+    <div class="notice compact-notice">
+      <strong>Implementation note:</strong> the supplied tree folder did not include per-node critic text or numeric scores, so node labels use filename metadata: root seed, checkpoint, semantic variant, restart depth, and branch seed.
+    </div>
+
+    <div id="tree-example-range-wrap" class="viewer-controls hidden">
+      <button type="button" data-tree-example="prev">‹</button>
+      <input id="tree-example-range" type="range" min="0" max="0" value="0" step="1" aria-label="Tree example">
+      <button type="button" data-tree-example="next">›</button>
+      <span id="tree-example-name" class="frame-label"></span>
+    </div>
+
+    <div class="tree-panel">
+      <div class="tree-slider-card tree-slider-main">
+        <h3>Slider animation: the tree unfolding</h3>
+        <img id="tree-frame" src="img/tree/000009/steps/step_00.webp" alt="PreviewDiff tree animation frame.">
+        <div><span id="tree-frame-label" class="frame-label">Decode roots</span></div>
+        <p id="tree-frame-caption">Use the controls to scrub through the tree-building process.</p>
+        <div class="slider-controls">
+          <button type="button" data-tree-frame="prev" aria-label="Previous tree frame">‹</button>
+          <input id="tree-frame-range" type="range" min="0" max="5" value="0" step="1" aria-label="Tree animation frame">
+          <button type="button" data-tree-frame="next" aria-label="Next tree frame">›</button>
+          <button type="button" class="primary" data-tree-frame="play">Play</button>
+        </div>
+      </div>
+
+      <!-- <div class="tree-gif-card tree-gif-main">
+        <h3>GIF version</h3>
+        <img id="tree-gif" src="img/tree/000009/tree_generation.gif" alt="Animated PreviewDiff search tree generation.">
+        <p class="caption-text">The GIF uses the same clean tree frames as the slider, for talks and static embeds.</p>
+      </div> -->
+    </div>
+
+    <div class="tree-explorer">
+      <h3>Explore a root-to-branch-to-final path</h3>
+      <p class="tree-explorer-intro">
+        Move across root previews, then click a child node. The diagram redraws the tree edges and highlights the chosen continuation.
+      </p>
+      <div class="tree-root-controls">
+        <button type="button" data-tree-root="prev" aria-label="Previous root">‹</button>
+        <input id="tree-root-range" type="range" min="0" max="7" value="0" step="1" aria-label="Root preview">
+        <button type="button" data-tree-root="next" aria-label="Next root">›</button>
+        <span id="tree-root-label" class="frame-label">root 0</span>
+      </div>
+
+      <div id="branch-tree" class="branch-tree">
+        <svg id="tree-lines" class="tree-lines" aria-hidden="true"></svg>
+
+        <div class="tree-column tree-column-root">
+          <div class="tree-column-heading">Root preview · checkpoint 5</div>
+          <div id="tree-root-node" class="tree-node root-node">
+            <img id="tree-root-img" src="img/tree/000009/roots/root_seed98052_cp005.webp" alt="Selected root preview.">
+            <strong id="tree-root-title">root 0</strong>
+            <span id="tree-root-meta">seed 98052 · cp5</span>
+          </div>
+          <p id="tree-root-text" class="tree-node-note">Select a root to update its child branches.</p>
+        </div>
+
+        <div class="tree-column tree-column-children">
+          <div class="tree-column-heading">Child branches · checkpoint 12</div>
+          <div id="child-grid" class="child-grid branch-child-grid" aria-label="Child branch candidates"></div>
+        </div>
+
+        <div class="tree-column tree-column-final">
+          <div class="tree-column-heading">Final rollout</div>
+          <figure id="tree-final-node" class="tree-node final-node">
+            <img id="tree-final-img" src="img/tree/000009/final.webp" alt="Final PreviewDiff output for the selected example.">
+            <figcaption>Final PreviewDiff output</figcaption>
+          </figure>
+          <p id="selected-child-caption" class="selected-continuation">Selected child branch.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="paper-walkthrough">
+    <hr>
+    <h2>Paper walkthrough figure</h2>
+    <p>
+      The static walkthrough from the paper is included here as a normal figure, rather than hidden inside the final figure selector.
+    </p>
+    <figure>
+      <img src="img/figures/fig3_example_previewdiff.webp" alt="PreviewDiff qualitative walkthrough figure showing root previews, feedback, child scores, and final branch." class="wide-img">
+      <figcaption>
+        PreviewDiff walkthrough: root previews, critic feedback, prompt edits, child scores, and the chosen final branch.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section id="examples">
+    <hr>
+    <h2>PreviewDiff vs Best-of-N qualitative examples</h2>
+    <p>
+      These are built from the supplied 15 additional examples. Use the slider to inspect prompts where PreviewDiff is compared against two Best-of-N candidates.
+    </p>
+
+    <div class="comparison-viewer">
+      <div class="example-title-row">
+        <h3 id="example-title">Example</h3>
+        <span id="example-counter" class="frame-label">1 / 15</span>
+      </div>
+      <p id="example-note"></p>
+      <div id="example-badges" class="badges" aria-label="Example tags"></div>
+      <div class="gallery-controls">
+        <button type="button" data-example="prev" aria-label="Previous qualitative example">‹</button>
+        <input id="example-range" type="range" min="0" max="14" value="0" step="1" aria-label="Qualitative example">
+        <button type="button" data-example="next" aria-label="Next qualitative example">›</button>
+      </div>
+      <div class="comparison-grid">
+        <figure class="winner">
+          <img id="example-previewdiff" src="img/examples/previewdiff/01_000009_previewdiff.webp" alt="PreviewDiff example.">
+          <figcaption id="example-previewdiff-cap">PreviewDiff</figcaption>
+        </figure>
+        <figure>
+          <img id="example-bon0" src="img/examples/bon0/01_000009_bon_cand0.webp" alt="Best-of-N candidate">
+          <figcaption id="example-bon0-cap">Best-of-N candidate</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section id="ablations">
+    <hr>
+    <h2>What matters in the search?</h2>
+    <p>
+      The paper’s ablations show that search width produces the largest gains, while depth and semantic variants provide complementary improvements. Earlier checkpoint intervention is useful because it leaves enough denoising time for a correction to affect the sample.
+    </p>
+    <div class="figure-grid">
+      <figure>
+        <img src="img/figures/fig5_ablation_axes.webp" alt="Ablations over checkpoint timing, tree depth, semantic variants, and search width." class="wide-img">
+        <figcaption>Search-axis ablations for images and videos.</figcaption>
+      </figure>
+      <figure>
+        <img src="img/figures/fig6_checkpoint_and_scale.webp" alt="Checkpoint timing and base model scaling results." class="wide-img">
+        <figcaption>Earlier two-checkpoint schedules perform best, and gains remain across larger base models.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="human-eval">
+    <hr>
+    <h2>Human evaluation</h2>
+    <p>
+      Human raters compare PreviewDiff, Best-of-N, and EvoSearch on content and style. The strongest gains are on content, which matches the method’s focus on prompt adherence: objects, attributes, counts, relations, and actions.
+    </p>
+    <figure>
+      <img src="img/figures/fig7_human_eval.webp" alt="Human evaluation of PreviewDiff compared with Best-of-N and EvoSearch." class="wide-img">
+      <figcaption>
+        PreviewDiff is preferred more often than baselines, especially for content correctness.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section id="figure-browser">
+    <hr>
+    <h2>Additional figures</h2>
+    <p>Select a paper figure without crowding the page.</p>
+    <label class="select-label" for="figure-select">Figure</label>
+    <select id="figure-select">
+      <option value="visual-image">Image examples</option>
+      <option value="video">Video examples</option>
+      <option value="prompts">Critic prompts</option>
+      <option value="failures">Failure cases</option>
+    </select>
+
+    <figure class="figure-browser-panel">
+      <img id="browser-image" src="img/figures/image_visual_example.webp" alt="Image examples comparing PreviewDiff and Best-of-N." class="wide-img">
+      <figcaption id="browser-caption">Image examples: additional prompts where PreviewDiff improves counts, object presence, attributes, and spatial relations.</figcaption>
+    </figure>
+  </section>
+
+  <footer>
+    <p>Static project website built from the uploaded LaTeX, template files, tree images, and PreviewDiff/Best-of-N examples.</p>
+  </footer>
+</div>
+</body>
+</html>
