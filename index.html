@@ -108,7 +108,7 @@
     <hr>
     <h2>Results at a glance</h2>
     <p>
-      The paper reports gains across image generation with SDXL, SD-3.5, and FLUX.2, and video generation with LTX-Video and Wan. The headline pattern is consistent: spending critic compute inside denoising beats spending it only on final-sample selection.
+      We find gains across image generation with SDXL, SD-3.5, and FLUX.2, and video generation with LTX-Video and Wan. Spending critic compute inside denoising beats spending it only on final-sample selection!
     </p>
 
     <div class="metric-grid" aria-label="Highlighted results">
@@ -137,7 +137,7 @@
     </figure>
 
     <details>
-      <summary>Show fixed-budget result tables from the paper</summary>
+      <summary>Fixed-budget results</summary>
       <h3>Image generation</h3>
       <div class="table-wrap" tabindex="0">
         <table>
@@ -181,10 +181,6 @@
     <hr>
     <h2>Interactive PreviewDiff search tree</h2>
     <p id="tree-prompt"><strong>Prompt:</strong></p>
-    <p id="tree-note" class="caption-text"></p>
-    <div class="notice compact-notice">
-      <strong>Implementation note:</strong> the supplied tree folder did not include per-node critic text or numeric scores, so node labels use filename metadata: root seed, checkpoint, semantic variant, restart depth, and branch seed.
-    </div>
 
     <div id="tree-example-range-wrap" class="viewer-controls hidden">
       <button type="button" data-tree-example="prev">‹</button>
@@ -195,10 +191,10 @@
 
     <div class="tree-panel">
       <div class="tree-slider-card tree-slider-main">
-        <h3>Slider animation: the tree unfolding</h3>
+        <h3>Move the slider to see the tree unfolding</h3>
         <img id="tree-frame" src="img/tree/000009/steps/step_00.webp" alt="PreviewDiff tree animation frame.">
         <div><span id="tree-frame-label" class="frame-label">Decode roots</span></div>
-        <p id="tree-frame-caption">Use the controls to scrub through the tree-building process.</p>
+        <p id="tree-frame-caption">The controls will scrub through the tree-building process.</p>
         <div class="slider-controls">
           <button type="button" data-tree-frame="prev" aria-label="Previous tree frame">‹</button>
           <input id="tree-frame-range" type="range" min="0" max="5" value="0" step="1" aria-label="Tree animation frame">
@@ -206,18 +202,12 @@
           <button type="button" class="primary" data-tree-frame="play">Play</button>
         </div>
       </div>
-
-      <!-- <div class="tree-gif-card tree-gif-main">
-        <h3>GIF version</h3>
-        <img id="tree-gif" src="img/tree/000009/tree_generation.gif" alt="Animated PreviewDiff search tree generation.">
-        <p class="caption-text">The GIF uses the same clean tree frames as the slider, for talks and static embeds.</p>
-      </div> -->
     </div>
 
     <div class="tree-explorer">
       <h3>Explore a root-to-branch-to-final path</h3>
       <p class="tree-explorer-intro">
-        Move across root previews, then click a child node. The diagram redraws the tree edges and highlights the chosen continuation.
+        You can across root previews and click a child node. The diagram redraws the tree edges and highlights the chosen continuation.
       </p>
       <div class="tree-root-controls">
         <button type="button" data-tree-root="prev" aria-label="Previous root">‹</button>
@@ -258,10 +248,7 @@
 
   <section id="paper-walkthrough">
     <hr>
-    <h2>Paper walkthrough figure</h2>
-    <p>
-      The static walkthrough from the paper is included here as a normal figure, rather than hidden inside the final figure selector.
-    </p>
+    <h2>Preview Diff approach</h2>
     <figure>
       <img src="img/figures/fig3_example_previewdiff.webp" alt="PreviewDiff qualitative walkthrough figure showing root previews, feedback, child scores, and final branch." class="wide-img">
       <figcaption>
@@ -274,7 +261,7 @@
     <hr>
     <h2>PreviewDiff vs Best-of-N qualitative examples</h2>
     <p>
-      These are built from the supplied 15 additional examples. Use the slider to inspect prompts where PreviewDiff is compared against two Best-of-N candidates.
+      Use the slider to inspect prompts where PreviewDiff is compared against two Best-of-N candidates.
     </p>
 
     <div class="comparison-viewer">
@@ -306,7 +293,7 @@
     <hr>
     <h2>What matters in the search?</h2>
     <p>
-      The paper’s ablations show that search width produces the largest gains, while depth and semantic variants provide complementary improvements. Earlier checkpoint intervention is useful because it leaves enough denoising time for a correction to affect the sample.
+      Our ablations show that search width produces the largest gains, while depth and semantic variants provide complementary improvements. Earlier checkpoint intervention is useful because it leaves enough denoising time for a correction to affect the sample.
     </p>
     <div class="figure-grid">
       <figure>
