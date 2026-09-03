@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="css/styles.css">
   <script defer src="js/tree-data.js"></script>
   <script defer src="js/example-data.js"></script>
+  <script defer src="js/video-data.js"></script>
   <script defer src="js/main.js"></script>
 </head>
 
@@ -21,12 +22,12 @@
     <h1>PreviewDiff: Multimodal Critic-Guided Search over Diffusion Latents</h1>
 
     <div class="author-row-new" aria-label="Authors">
-      <span><a href="https://vsubramaniam851.github.io/">Vighnesh Subramaniam<sup>1*</sup></a></span>,
-      <span><a href="https://people.csail.mit.edu/boris/boris.html">Boris Katz<sup>1</sup></a></span>,
-      <span><a href="https://briancheung.github.io/">Brian Cheung<sup>1,3</sup></a></span>,
-      <span><a href="https://chunliangli.github.io/">Chun-Liang Li<sup>2</sup></a></span>,
-      <span><a href="https://tomas.pfister.fi/">Tomas Pfister<sup>2</sup></a></span>,
-      <span><a href="https://people.csail.mit.edu/yalesong/home/">Yale Song<sup>2</sup></a></span>
+      <span>Vighnesh Subramaniam<sup>1,2,*</sup></span>,
+      <span>Boris Katz<sup>1</sup></span>,
+      <span>Brian Cheung<sup>1,3</sup></span>,
+      <span>Chun-Liang Li<sup>2</sup></span>,
+      <span>Tomas Pfister<sup>2</sup></span>,
+      <span>Yale Song<sup>2</sup></span>
     </div>
 
     <div class="affiliations">
@@ -39,13 +40,7 @@
     <div class="paper-btn-parent" aria-label="Project links">
       <span class="paper-btn disabled" title="Add the public paper URL when available">Paper</span>
       <span class="paper-btn disabled" title="Add the public code URL when available">Code</span>
-      <!-- <a class="paper-btn" href="#tree-demo">Interactive Tree</a>
-      <a class="paper-btn" href="#examples">Examples</a> -->
     </div>
-
-    <!-- <p class="tagline">
-      PreviewDiff uses multimodal feedback while a diffusion sample is still editable: decode intermediate previews, critique them, branch over semantic fixes and local latent restarts, then prune and roll forward the best continuations.
-    </p> -->
   </header>
 
   <section id="teaser-image">
@@ -96,19 +91,19 @@
       <li><strong>Tree policy:</strong> beam-pruned expansion with max backup over descendant values.</li>
     </ol>
 
-    <!-- <figure>
+    <figure>
       <img src="img/figures/new_concept_figure.webp" alt="Conceptual diagram of PreviewDiff search states, critic feedback, and latent continuation." class="wide-img">
       <figcaption>
         The multimodal model is used both as a value estimator and as a policy-like source of semantic correction actions.
       </figcaption>
-    </figure> -->
+    </figure>
   </section>
 
   <section id="results">
     <hr>
     <h2>Results at a glance</h2>
     <p>
-      We find gains across image generation with SDXL, SD-3.5, and FLUX.2, and video generation with LTX-Video and Wan. Spending critic compute inside denoising beats spending it only on final-sample selection!
+      The paper reports gains across image generation with SDXL, SD-3.5, and FLUX.2, and video generation with LTX-Video and Wan 2.2. The headline pattern is consistent: spending critic compute inside denoising beats spending it only on final-sample selection.
     </p>
 
     <div class="metric-grid" aria-label="Highlighted results">
@@ -142,17 +137,17 @@
       <div class="table-wrap" tabindex="0">
         <table>
           <thead>
-            <tr><th>Model</th><th>Method</th><th>GenEval2 Gemini P@4</th><th>GenEval2 Qwen-3 Val</th><th>T2I-CoRe Gemini P@4</th><th>T2I-Comp++ Gemini P@4</th><th>BLIP VQA</th></tr>
+            <tr><th>Model</th><th>Method</th><th>GenEval2 Gemini P@4</th><th>GenEval2 Qwen-3 Val</th><th>GenEval2 Qwen-3 P@4</th><th>T2I-CoReBench Gemini P@4</th><th>T2I-CompBench++ Gemini P@4</th><th>T2I-CompBench++ BLIP VQA</th></tr>
           </thead>
           <tbody>
-            <tr class="highlight"><td>SDXL</td><td>PreviewDiff</td><td>2.292</td><td>1.9765</td><td>2.015</td><td>3.474</td><td>0.4844</td></tr>
-            <tr><td>SDXL</td><td>Best-of-N</td><td>2.090</td><td>1.5523</td><td>1.713</td><td>2.963</td><td>0.3976</td></tr>
-            <tr><td>SDXL</td><td>EvoSearch</td><td>2.103</td><td>—</td><td>1.7543</td><td>3.013</td><td>0.4521</td></tr>
-            <tr><td>SDXL</td><td>Particle-Sample</td><td>1.902</td><td>—</td><td>1.9154</td><td>3.003</td><td>0.4255</td></tr>
-            <tr class="highlight"><td>SD-3.5</td><td>PreviewDiff</td><td>1.965</td><td>1.588</td><td>1.765</td><td>2.011</td><td>0.2566</td></tr>
-            <tr><td>SD-3.5</td><td>Best-of-N</td><td>1.754</td><td>1.3854</td><td>1.545</td><td>1.913</td><td>0.2011</td></tr>
-            <tr class="highlight"><td>FLUX.2 9B</td><td>PreviewDiff</td><td>3.112</td><td>2.675</td><td>2.781</td><td>3.758</td><td>0.7851</td></tr>
-            <tr><td>FLUX.2 9B</td><td>Best-of-N</td><td>2.775</td><td>2.504</td><td>2.674</td><td>3.510</td><td>0.7256</td></tr>
+            <tr class="highlight"><td>SDXL</td><td>PreviewDiff</td><td>2.292</td><td>1.9765</td><td>1.975</td><td>2.015</td><td>3.474</td><td>0.4844</td></tr>
+            <tr><td>SDXL</td><td>Best-of-N</td><td>2.090</td><td>1.5523</td><td>1.735</td><td>1.713</td><td>2.963</td><td>0.3976</td></tr>
+            <tr><td>SDXL</td><td>EvoSearch</td><td>2.103</td><td>—</td><td>1.6196</td><td>1.7543</td><td>3.013</td><td>0.4521</td></tr>
+            <tr><td>SDXL</td><td>Particle-Sample</td><td>1.902</td><td>—</td><td>1.7544</td><td>1.9154</td><td>3.003</td><td>0.4255</td></tr>
+            <tr class="highlight"><td>SD-3.5</td><td>PreviewDiff</td><td>1.965</td><td>1.588</td><td>1.892</td><td>1.765</td><td>2.011</td><td>0.2566</td></tr>
+            <tr><td>SD-3.5</td><td>Best-of-N</td><td>1.754</td><td>1.3854</td><td>1.713</td><td>1.545</td><td>1.913</td><td>0.2011</td></tr>
+            <tr class="highlight"><td>FLUX.2 9B</td><td>PreviewDiff</td><td>3.112</td><td>2.675</td><td>1.983</td><td>2.781</td><td>3.758</td><td>0.7851</td></tr>
+            <tr><td>FLUX.2 9B</td><td>Best-of-N</td><td>2.775</td><td>2.504</td><td>1.875</td><td>2.674</td><td>3.510</td><td>0.7256</td></tr>
           </tbody>
         </table>
       </div>
@@ -161,7 +156,7 @@
       <div class="table-wrap" tabindex="0">
         <table>
           <thead>
-            <tr><th>Model</th><th>Method</th><th>T2V-Comp Gemini P@4</th><th>T2V-Comp Qwen3-VL P@4</th><th>LLaVA Eval</th><th>NarrLV Gemini P@4</th><th>NarrLV Qwen-2.5 Eval</th><th>V-Bench 2.0 Gemini P@4</th></tr>
+            <tr><th>Model</th><th>Method</th><th>T2V-CompBench Gemini P@4</th><th>T2V-CompBench Qwen3-VL P@4</th><th>LLaVA-Eval</th><th>NarrLV Gemini P@4</th><th>NarrLV Qwen-2.5 Eval</th><th>V-Bench 2.0 Gemini P@4</th></tr>
           </thead>
           <tbody>
             <tr class="highlight"><td>LTX-Video 9B</td><td>PreviewDiff</td><td>3.021</td><td>1.987</td><td>0.4523</td><td>2.167</td><td>62.17</td><td>3.162</td></tr>
@@ -191,7 +186,7 @@
 
     <div class="tree-panel">
       <div class="tree-slider-card tree-slider-main">
-        <h3>Move the slider to see the tree unfolding</h3>
+        <h3>Move the slider to see the tree unfolding!</h3>
         <img id="tree-frame" src="img/tree/000009/steps/step_00.webp" alt="PreviewDiff tree animation frame.">
         <div><span id="tree-frame-label" class="frame-label">Decode roots</span></div>
         <p id="tree-frame-caption">The controls will scrub through the tree-building process.</p>
@@ -202,7 +197,13 @@
           <button type="button" class="primary" data-tree-frame="play">Play</button>
         </div>
       </div>
-    </div>
+
+      <!-- <div class="tree-gif-card tree-gif-main">
+        <h3>GIF version</h3>
+        <img id="tree-gif" src="img/tree/000009/tree_generation.gif" alt="Animated PreviewDiff search tree generation.">
+        <p class="caption-text">The GIF uses the same clean tree frames as the slider, for talks and static embeds.</p>
+      </div>
+    </div> -->
 
     <div class="tree-explorer">
       <h3>Explore a root-to-branch-to-final path</h3>
@@ -248,11 +249,14 @@
 
   <section id="paper-walkthrough">
     <hr>
-    <h2>Preview Diff approach</h2>
+    <h2>PreviewDiff search walkthrough</h2>
+    <p>
+      This paper figure follows one search from intermediate root previews through critic feedback and branch scoring to the selected final generation.
+    </p>
     <figure>
       <img src="img/figures/fig3_example_previewdiff.webp" alt="PreviewDiff qualitative walkthrough figure showing root previews, feedback, child scores, and final branch." class="wide-img">
       <figcaption>
-        PreviewDiff walkthrough: root previews, critic feedback, prompt edits, child scores, and the chosen final branch.
+        One complete PreviewDiff search, showing root previews, critic feedback, prompt edits, child scores, and the chosen final branch.
       </figcaption>
     </figure>
   </section>
@@ -261,7 +265,7 @@
     <hr>
     <h2>PreviewDiff vs Best-of-N qualitative examples</h2>
     <p>
-      Use the slider to inspect prompts where PreviewDiff is compared against two Best-of-N candidates.
+      Use the slider to compare PreviewDiff with one Best-of-N sample.
     </p>
 
     <div class="comparison-viewer">
@@ -282,10 +286,54 @@
           <figcaption id="example-previewdiff-cap">PreviewDiff</figcaption>
         </figure>
         <figure>
-          <img id="example-bon0" src="img/examples/bon0/01_000009_bon_cand0.webp" alt="Best-of-N candidate">
-          <figcaption id="example-bon0-cap">Best-of-N candidate</figcaption>
+          <img id="example-bon" src="img/examples/bon1/01_000009_bon_cand1.webp" alt="Best-of-N example.">
+          <figcaption id="example-bon-cap">Best-of-N</figcaption>
         </figure>
       </div>
+    </div>
+  </section>
+
+  <section id="video-examples">
+    <hr>
+    <h2>PreviewDiff vs Best-of-N video examples</h2>
+
+    <div id="video-viewer" class="video-comparison-viewer">
+      <div class="example-title-row">
+        <h3 id="video-example-title">01 · Warm streetlights on snow</h3>
+        <span id="video-example-counter" class="frame-label" aria-live="polite">1 / 10</span>
+      </div>
+
+      <div class="video-prompt" aria-live="polite">
+        <span class="prompt-label">Prompt</span>
+        <p id="video-example-prompt">In a snowy nighttime setting, the streetlights cast a warm, orange glow over the quiet street.</p>
+      </div>
+
+      <div id="video-example-badges" class="badges" aria-label="Video example tags"></div>
+
+      <div class="video-gallery-controls">
+        <button type="button" data-video-example="prev" aria-label="Previous video example">‹</button>
+        <input id="video-example-range" type="range" min="0" max="9" value="0" step="1" aria-label="Video example">
+        <button type="button" data-video-example="next" aria-label="Next video example">›</button>
+        <button type="button" class="primary" data-video-action="toggle">Play all</button>
+        <button type="button" data-video-action="restart">Restart</button>
+      </div>
+
+      <div class="video-comparison-grid">
+        <figure class="winner">
+          <video id="video-previewdiff" muted loop playsinline controls preload="metadata" poster="img/videos/000002/previewdiff_poster.webp">
+            <source src="img/videos/000002/previewdiff.mp4" type="video/mp4">
+          </video>
+          <figcaption>PreviewDiff</figcaption>
+        </figure>
+        <figure>
+          <video id="video-bon" muted loop playsinline controls preload="metadata" poster="img/videos/000002/best_of_n_2_poster.webp">
+            <source src="img/videos/000002/best_of_n_2.mp4" type="video/mp4">
+          </video>
+          <figcaption>Best-of-N</figcaption>
+        </figure>
+      </div>
+
+      <p class="caption-text">The two videos restart together when the example changes. Use “Play all” or “Restart” to compare motion from the same point in time.</p>
     </div>
   </section>
 
@@ -293,7 +341,7 @@
     <hr>
     <h2>What matters in the search?</h2>
     <p>
-      Our ablations show that search width produces the largest gains, while depth and semantic variants provide complementary improvements. Earlier checkpoint intervention is useful because it leaves enough denoising time for a correction to affect the sample.
+      The paper’s ablations show that search width produces the largest gains, while depth and semantic variants provide complementary improvements. Earlier checkpoint intervention is useful because it leaves enough denoising time for a correction to affect the sample.
     </p>
     <div class="figure-grid">
       <figure>
@@ -316,31 +364,14 @@
     <figure>
       <img src="img/figures/fig7_human_eval.webp" alt="Human evaluation of PreviewDiff compared with Best-of-N and EvoSearch." class="wide-img">
       <figcaption>
-        PreviewDiff is preferred more often than baselines, especially for content correctness.
+        PreviewDiff is preferred more often than the baselines, especially for content correctness.
       </figcaption>
     </figure>
   </section>
 
-  <section id="figure-browser">
-    <hr>
-    <h2>Additional figures</h2>
-    <p>Select a paper figure without crowding the page.</p>
-    <label class="select-label" for="figure-select">Figure</label>
-    <select id="figure-select">
-      <option value="visual-image">Image examples</option>
-      <option value="video">Video examples</option>
-      <option value="prompts">Critic prompts</option>
-      <option value="failures">Failure cases</option>
-    </select>
-
-    <figure class="figure-browser-panel">
-      <img id="browser-image" src="img/figures/image_visual_example.webp" alt="Image examples comparing PreviewDiff and Best-of-N." class="wide-img">
-      <figcaption id="browser-caption">Image examples: additional prompts where PreviewDiff improves counts, object presence, attributes, and spatial relations.</figcaption>
-    </figure>
-  </section>
 
   <footer>
-    <p>Static project website built from the uploaded LaTeX, template files, tree images, and PreviewDiff/Best-of-N examples.</p>
+    <p>Static project website built from the uploaded LaTeX, template files, tree assets, and qualitative PreviewDiff/Best-of-N examples.</p>
   </footer>
 </div>
 </body>
