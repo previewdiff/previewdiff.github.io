@@ -33,7 +33,7 @@ window.PREVIEWDIFF_TREE_EXAMPLES = [
       {
         "src": "img/tree/000009/steps/step_04.webp",
         "label": "Roll final output",
-        "caption": "The surviving latent continuation is rolled to a completed PreviewDiff image.",
+        "caption": "The surviving latent continuation is rolled out to a completed PreviewDiff image.",
         "alt": "Composite frame showing the selected branch rolled out into the final image."
       },
       {

@@ -212,7 +212,7 @@
       exampleIndex = (nextIndex + examples.length) % examples.length;
       const ex = currentExample();
       treePrompt.textContent = `Prompt: “${ex.prompt}”`;
-      treeNote.textContent = ex.note;
+      if (treeNote) treeNote.textContent = ex.note;
       if (gif) {
         gif.src = ex.gif;
         gif.alt = `Animated PreviewDiff tree generation for ${ex.prompt}.`;
@@ -265,6 +265,23 @@
   function initComparisonViewer() {
     const examples = window.PREVIEWDIFF_COMPARISON_EXAMPLES || [];
     if (!examples.length) return;
+    const worseBonById = {
+      '000009': 'bon1',
+      '000049': 'bon1',
+      '000065': 'bon0',
+      '000077': 'bon1',
+      '000121': 'bon1',
+      '000133': 'bon1',
+      '000149': 'bon0',
+      '000153': 'bon0',
+      '000185': 'bon0',
+      '000189': 'bon0',
+      '000213': 'bon1',
+      '000217': 'bon0',
+      '000225': 'bon0',
+      '000233': 'bon0',
+      '000249': 'bon1'
+    };
     const range = $('#example-range');
     const prev = $('[data-example="prev"]');
     const next = $('[data-example="next"]');
@@ -273,16 +290,15 @@
     const note = $('#example-note');
     const badges = $('#example-badges');
     const pdImg = $('#example-previewdiff');
-    const b0Img = $('#example-bon0');
-    const b1Img = $('#example-bon1');
+    const bonImg = $('#example-bon');
     const pdCap = $('#example-previewdiff-cap');
-    const b0Cap = $('#example-bon0-cap');
-    const b1Cap = $('#example-bon1-cap');
+    const bonCap = $('#example-bon-cap');
     let index = 0;
 
     function setExample(nextIndex) {
       index = (nextIndex + examples.length) % examples.length;
       const ex = examples[index];
+      const bonKey = worseBonById[ex.id] || 'bon0';
       range.value = String(index);
       range.setAttribute('aria-valuetext', `${ex.rank}. ${ex.prompt}`);
       counter.textContent = `${index + 1} / ${examples.length}`;
@@ -291,23 +307,20 @@
       badges.innerHTML = '';
       const scoreBadge = document.createElement('span');
       scoreBadge.className = 'badge score';
-      // scoreBadge.textContent = `PreviewDiff score ${ex.score}/4`;
-      // badges.appendChild(scoreBadge);
-      // ex.skills.forEach((skill) => {
-      //   const badge = document.createElement('span');
-      //   badge.className = 'badge';
-      //   badge.textContent = skill;
-      //   badges.appendChild(badge);
-      // });
+      scoreBadge.textContent = `PreviewDiff score ${ex.score}/4`;
+      badges.appendChild(scoreBadge);
+      [...new Set(ex.skills)].forEach((skill) => {
+        const badge = document.createElement('span');
+        badge.className = 'badge';
+        badge.textContent = skill;
+        badges.appendChild(badge);
+      });
       pdImg.src = ex.previewdiff;
-      b0Img.src = ex.bon0;
-      b1Img.src = ex.bon1;
+      bonImg.src = ex[bonKey];
       pdImg.alt = `PreviewDiff result for ${ex.prompt}.`;
-      b0Img.alt = `Best-of-N candidate 0 for ${ex.prompt}.`;
-      b1Img.alt = `Best-of-N candidate 1 for ${ex.prompt}.`;
+      bonImg.alt = `Best-of-N result for ${ex.prompt}.`;
       pdCap.textContent = 'PreviewDiff';
-      b0Cap.textContent = 'Best-of-N candidate 0';
-      b1Cap.textContent = 'Best-of-N candidate 1';
+      bonCap.textContent = 'Best-of-N';
     }
 
     range.min = '0';
@@ -318,46 +331,145 @@
     setExample(0);
   }
 
-  function initFigureBrowser() {
-    const figures = {
-      'visual-image': {
-        src: 'img/figures/image_visual_example.webp',
-        alt: 'Image examples comparing PreviewDiff and Best-of-N.',
-        caption: 'Image examples: additional prompts where PreviewDiff improves counts, object presence, attributes, and spatial relations.'
-      },
-      'video': {
-        src: 'img/figures/video_examples.webp',
-        alt: 'Video examples comparing PreviewDiff and Best-of-N.',
-        caption: 'Video examples: PreviewDiff can improve scene color, lighting, object identity, and action/environment alignment.'
-      },
-      'prompts': {
-        src: 'img/figures/prompts.webp',
-        alt: 'Prompts used for PreviewDiff feedback and final scoring.',
-        caption: 'Prompting setup: compact fix notes are appended to the original prompt, while final scoring uses object/count, attribute, relation/action, and overall semantic criteria.'
-      },
-      'failures': {
-        src: 'img/figures/fig10_failures.webp',
-        alt: 'PreviewDiff failure cases.',
-        caption: 'Failure cases: exact numeracy, spatial grounding, attribute binding, and long-horizon temporal ordering can remain difficult.'
-      }
+  function initVideoViewer() {
+    const examples = window.PREVIEWDIFF_VIDEO_EXAMPLES || [];
+    if (!examples.length) return;
+    const worseBonById = {
+      '000002': 'bon1',
+      '000010': 'bon0',
+      '000018': 'bon0',
+      '000030': 'bon1',
+      '000046': 'bon1',
+      '000146': 'bon0',
+      '000154': 'bon0',
+      '000166': 'bon0',
+      '000242': 'bon1',
+      '000246': 'bon0'
     };
-    const select = $('#figure-select');
-    const image = $('#browser-image');
-    const caption = $('#browser-caption');
-    if (!select || !image || !caption) return;
-    Object.values(figures).forEach((figure) => { const preload = new Image(); preload.src = figure.src; });
-    select.addEventListener('change', () => {
-      const figure = figures[select.value];
-      if (!figure) return;
-      image.src = figure.src;
-      image.alt = figure.alt;
-      caption.textContent = figure.caption;
+
+    const viewer = $('#video-viewer');
+    const range = $('#video-example-range');
+    const prev = $('[data-video-example="prev"]');
+    const next = $('[data-video-example="next"]');
+    const toggle = $('[data-video-action="toggle"]');
+    const restart = $('[data-video-action="restart"]');
+    const counter = $('#video-example-counter');
+    const title = $('#video-example-title');
+    const prompt = $('#video-example-prompt');
+    const badges = $('#video-example-badges');
+    const pdVideo = $('#video-previewdiff');
+    const bonVideo = $('#video-bon');
+    const videos = [pdVideo, bonVideo];
+
+    if (!viewer || !range || !prev || !next || !toggle || !restart || videos.some((video) => !video)) return;
+
+    let index = 0;
+    let wantsPlayback = !prefersReducedMotion;
+    let isVisible = !('IntersectionObserver' in window);
+
+    function updateToggleLabel() {
+      toggle.textContent = wantsPlayback ? 'Pause all' : 'Play all';
+      toggle.setAttribute('aria-pressed', wantsPlayback ? 'true' : 'false');
+    }
+
+    function pauseAll() {
+      videos.forEach((video) => video.pause());
+    }
+
+    function restartAll() {
+      videos.forEach((video) => {
+        try {
+          video.currentTime = 0;
+        } catch (error) {
+          // The browser will remain at the start until metadata is available.
+        }
+      });
+    }
+
+    function playAll(shouldRestart = false) {
+      if (!wantsPlayback || !isVisible) return;
+      if (shouldRestart) restartAll();
+      videos.forEach((video) => {
+        video.muted = true;
+        const playPromise = video.play();
+        if (playPromise && typeof playPromise.catch === 'function') playPromise.catch(() => {});
+      });
+    }
+
+    function setVideo(video, src, poster, label) {
+      video.pause();
+      video.poster = poster;
+      video.setAttribute('aria-label', label);
+      const source = $('source', video);
+      if (source) source.src = src;
+      else video.src = src;
+      video.load();
+    }
+
+    function renderBadges(example) {
+      badges.innerHTML = '';
+      const scoreBadge = document.createElement('span');
+      scoreBadge.className = 'badge score';
+      scoreBadge.textContent = `PreviewDiff score ${example.score}/4`;
+      badges.appendChild(scoreBadge);
+
+      const categoryBadge = document.createElement('span');
+      categoryBadge.className = 'badge';
+      categoryBadge.textContent = example.category;
+      badges.appendChild(categoryBadge);
+    }
+
+    function setExample(nextIndex) {
+      pauseAll();
+      index = (nextIndex + examples.length) % examples.length;
+      const example = examples[index];
+      const bonKey = worseBonById[example.id] || 'bon0';
+      const bonPosterKey = `${bonKey}Poster`;
+      range.value = String(index);
+      range.setAttribute('aria-valuetext', `${index + 1}. ${example.title}`);
+      counter.textContent = `${index + 1} / ${examples.length}`;
+      title.textContent = `${String(index + 1).padStart(2, '0')} · ${example.title}`;
+      prompt.textContent = example.prompt;
+      renderBadges(example);
+
+      setVideo(pdVideo, example.previewdiff, example.previewdiffPoster, `PreviewDiff video for: ${example.prompt}`);
+      setVideo(bonVideo, example[bonKey], example[bonPosterKey], `Best-of-N video for: ${example.prompt}`);
+
+      if (wantsPlayback && isVisible) window.setTimeout(() => playAll(true), 80);
+    }
+
+    range.min = '0';
+    range.max = String(examples.length - 1);
+    range.addEventListener('input', (event) => setExample(Number(event.target.value)));
+    prev.addEventListener('click', () => setExample(index - 1));
+    next.addEventListener('click', () => setExample(index + 1));
+    toggle.addEventListener('click', () => {
+      wantsPlayback = !wantsPlayback;
+      updateToggleLabel();
+      if (wantsPlayback) playAll(false);
+      else pauseAll();
     });
+    restart.addEventListener('click', () => {
+      restartAll();
+      if (wantsPlayback) playAll(false);
+    });
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver((entries) => {
+        isVisible = entries.some((entry) => entry.isIntersecting);
+        if (isVisible) playAll(false);
+        else pauseAll();
+      }, { threshold: 0.18 });
+      observer.observe(viewer);
+    }
+
+    updateToggleLabel();
+    setExample(0);
   }
 
   document.addEventListener('DOMContentLoaded', () => {
     initTreeViewer();
     initComparisonViewer();
-    initFigureBrowser();
+    initVideoViewer();
   });
 })();

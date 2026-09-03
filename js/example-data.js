@@ -7,8 +7,6 @@ window.PREVIEWDIFF_COMPARISON_EXAMPLES = [
     "score": 4,
     "skills": [
       "count",
-      "object",
-      "count",
       "object"
     ],
     "previewdiff": "img/examples/previewdiff/01_000009_previewdiff.webp",
@@ -39,8 +37,6 @@ window.PREVIEWDIFF_COMPARISON_EXAMPLES = [
     "note": "Strong multi-object count example with one giraffe and two flamingos.",
     "score": 4,
     "skills": [
-      "count",
-      "object",
       "count",
       "object"
     ],
@@ -74,9 +70,7 @@ window.PREVIEWDIFF_COMPARISON_EXAMPLES = [
     "skills": [
       "count",
       "object",
-      "count",
-      "attribute",
-      "object"
+      "attribute"
     ],
     "previewdiff": "img/examples/previewdiff/05_000121_previewdiff.webp",
     "bon0": "img/examples/bon0/05_000121_bon_cand0.webp",
@@ -86,15 +80,13 @@ window.PREVIEWDIFF_COMPARISON_EXAMPLES = [
   {
     "rank": 6,
     "id": "000133",
-    "prompt": "six flowers in front of a umbrella",
+    "prompt": "six flowers in front of an umbrella",
     "note": "Spatial relation and count example with six flowers in front of an umbrella.",
     "score": 4,
     "skills": [
       "count",
       "object",
-      "position",
-      "count",
-      "object"
+      "position"
     ],
     "previewdiff": "img/examples/previewdiff/06_000133_previewdiff.webp",
     "bon0": "img/examples/bon0/06_000133_bon_cand0.webp",
@@ -111,9 +103,7 @@ window.PREVIEWDIFF_COMPARISON_EXAMPLES = [
       "count",
       "attribute",
       "object",
-      "position",
-      "count",
-      "object"
+      "position"
     ],
     "previewdiff": "img/examples/previewdiff/07_000149_previewdiff.webp",
     "bon0": "img/examples/bon0/07_000149_bon_cand0.webp",
@@ -129,8 +119,6 @@ window.PREVIEWDIFF_COMPARISON_EXAMPLES = [
     "skills": [
       "count",
       "attribute",
-      "object",
-      "count",
       "object"
     ],
     "previewdiff": "img/examples/previewdiff/08_000153_previewdiff.webp",
@@ -141,16 +129,14 @@ window.PREVIEWDIFF_COMPARISON_EXAMPLES = [
   {
     "rank": 9,
     "id": "000185",
-    "prompt": "a stone mushroom behind a elephant",
+    "prompt": "a stone mushroom behind an elephant",
     "note": "Spatial relation/material example with a stone mushroom behind an elephant.",
     "score": 4,
     "skills": [
       "count",
       "attribute",
       "object",
-      "position",
-      "count",
-      "object"
+      "position"
     ],
     "previewdiff": "img/examples/previewdiff/09_000185_previewdiff.webp",
     "bon0": "img/examples/bon0/09_000185_bon_cand0.webp",
@@ -167,9 +153,7 @@ window.PREVIEWDIFF_COMPARISON_EXAMPLES = [
       "count",
       "object",
       "position",
-      "count",
-      "attribute",
-      "object"
+      "attribute"
     ],
     "previewdiff": "img/examples/previewdiff/10_000189_previewdiff.webp",
     "bon0": "img/examples/bon0/10_000189_bon_cand0.webp",
@@ -179,18 +163,14 @@ window.PREVIEWDIFF_COMPARISON_EXAMPLES = [
   {
     "rank": 11,
     "id": "000213",
-    "prompt": "a candle, and a blue truck in front of a cookie",
-    "note": "Multi-object spatial example with a candle and blue truck in front of a cookie.",
+    "prompt": "a candle and a blue truck in front of a cookie",
+    "note": "Multi-object spatial example with a candle and a blue truck in front of a cookie.",
     "score": 4,
     "skills": [
       "count",
       "object",
-      "count",
       "attribute",
-      "object",
-      "position",
-      "count",
-      "object"
+      "position"
     ],
     "previewdiff": "img/examples/previewdiff/11_000213_previewdiff.webp",
     "bon0": "img/examples/bon0/11_000213_bon_cand0.webp",
@@ -207,9 +187,7 @@ window.PREVIEWDIFF_COMPARISON_EXAMPLES = [
       "count",
       "object",
       "position",
-      "count",
-      "attribute",
-      "object"
+      "attribute"
     ],
     "previewdiff": "img/examples/previewdiff/12_000217_previewdiff.webp",
     "bon0": "img/examples/bon0/12_000217_bon_cand0.webp",
@@ -219,17 +197,12 @@ window.PREVIEWDIFF_COMPARISON_EXAMPLES = [
   {
     "rank": 13,
     "id": "000225",
-    "prompt": "a plastic koala and a pink sheep and a bicycle",
-    "note": "Multi-object attribute example with a plastic koala, pink sheep, and bicycle.",
+    "prompt": "a plastic koala, a pink sheep, and a bicycle",
+    "note": "Multi-object attribute example with a plastic koala, a pink sheep, and a bicycle.",
     "score": 4,
     "skills": [
       "count",
       "attribute",
-      "object",
-      "count",
-      "attribute",
-      "object",
-      "count",
       "object"
     ],
     "previewdiff": "img/examples/previewdiff/13_000225_previewdiff.webp",
@@ -244,9 +217,6 @@ window.PREVIEWDIFF_COMPARISON_EXAMPLES = [
     "note": "Color/count/material example with a purple cookie and two sparkling mushrooms.",
     "score": 4,
     "skills": [
-      "count",
-      "attribute",
-      "object",
       "count",
       "attribute",
       "object"
@@ -266,10 +236,7 @@ window.PREVIEWDIFF_COMPARISON_EXAMPLES = [
       "count",
       "attribute",
       "object",
-      "position",
-      "count",
-      "attribute",
-      "object"
+      "position"
     ],
     "previewdiff": "img/examples/previewdiff/15_000249_previewdiff.webp",
     "bon0": "img/examples/bon0/15_000249_bon_cand0.webp",
