@@ -104,26 +104,8 @@
     <hr>
     <h2>Results at a glance</h2>
     <p>
-      The paper reports gains across image generation with SDXL, SD-3.5, and FLUX.2, and video generation with LTX-Video and Wan 2.2. The headline pattern is consistent: spending critic compute inside denoising beats spending it only on final-sample selection.
+      We find gains across image generation with SDXL, SD-3.5, and FLUX.2, and video generation with LTX-Video and Wan 2.2. The headline pattern is consistent: spending critic compute inside denoising beats spending it only on final-sample selection.
     </p>
-
-    <div class="metric-grid" aria-label="Highlighted results">
-      <div class="metric-card">
-        <span class="metric-number">+0.202</span>
-        <span class="metric-label">SDXL · GenEval2 Gemini P@4</span>
-        <span class="metric-note">PreviewDiff 2.292 vs Best-of-N 2.090.</span>
-      </div>
-      <div class="metric-card">
-        <span class="metric-number">+0.511</span>
-        <span class="metric-label">SDXL · T2I-CompBench++ Gemini P@4</span>
-        <span class="metric-note">PreviewDiff 3.474 vs Best-of-N 2.963.</span>
-      </div>
-      <div class="metric-card">
-        <span class="metric-number">+0.623</span>
-        <span class="metric-label">LTX-Video · NarrLV Gemini P@4</span>
-        <span class="metric-note">PreviewDiff 2.167 vs Best-of-N 1.544.</span>
-      </div>
-    </div>
 
     <figure>
       <img src="img/figures/fig2_scaling.webp" alt="Scaling curves comparing PreviewDiff and Best-of-N for image and video generation." class="wide-img">
